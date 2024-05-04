@@ -18,6 +18,7 @@ blogRouter.use("/*", async (c, next) => {
     const authHeader = c.req.header("authorization") || "";
 	try {
 		const user = await verify(authHeader, c.env.JWT_SECRET);
+		console.log(user);
 		if(user) {
 			c.set("userId", user.id);
 			await next();
@@ -96,7 +97,7 @@ blogRouter.get('/bulk', async (c) => {
         datasourceUrl: c.env?.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const post = await prisma.post.findMany({
+    const posts = await prisma.post.findMany({
 		select: {
 			content: true,
 			title: true,
@@ -109,7 +110,7 @@ blogRouter.get('/bulk', async (c) => {
 		}
 	});
 
-    return c.json({post})
+    return c.json({posts})
 })
 
 blogRouter.get('/:id', async (c) => {
